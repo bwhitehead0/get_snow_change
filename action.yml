@@ -31,7 +31,7 @@ inputs:
 outputs:
   change_detail:
     description: The full JSON response from the ServiceNow API
-    value: ${{ steps.create_change.outputs.change_detail }}
+    value: ${{ steps.get_change_detail.outputs.change_detail }}
 
 runs:
   using: composite

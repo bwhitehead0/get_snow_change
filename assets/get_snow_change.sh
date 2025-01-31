@@ -236,7 +236,7 @@ get_chg_detail() {
     # if so, return .result[0] which contains the ticket details
     if echo "$body" | jq 'has("result")' > /dev/null 2>&1; then
       dbg "get_chg_detail(): JSON is expected response body."
-      dbg "get_chg_detail(): Change ticket details: $body"
+      dbg "get_chg_detail(): Change ticket raw response: $body"
       echo "$body" | jq '.result[0]' -c
     fi
 
