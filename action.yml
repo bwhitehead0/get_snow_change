@@ -54,3 +54,7 @@ runs:
 
         echo "change_detail=$response" >> $GITHUB_OUTPUT
       shell: bash
+
+branding:
+  icon: "cloud-snow"
+  color: "orange"
