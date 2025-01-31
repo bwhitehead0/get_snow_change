@@ -39,7 +39,7 @@ runs:
     - name: Get ServiceNow Change Ticket Detail
       id: get_change_detail
       run: |
-        response=$(${{ github.action_path }}/get_snow_change.sh \
+        response=$(${{ github.action_path }}/assets/get_snow_change.sh \
         -c "${{ inputs.change_number }}" \
         -u "${{ inputs.snow_user }}" \
         -p "${{ inputs.snow_password }}" \
