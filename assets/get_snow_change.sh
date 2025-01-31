@@ -358,9 +358,6 @@ main() {
     fi
   fi
 
-
-
-
   # get change ticket details
   change_ticket_detail=$(get_chg_detail -u "${username}" -p "${password}" -l "${sn_url}" -c "${change_ticket}" -o "${timeout}" -t "${BEARER_TOKEN}")
 

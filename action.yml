@@ -1,0 +1,56 @@
+name: create_snow_change
+description: Create ServiceNow CHG ticket
+author: bwhitehead0
+inputs:
+  snow_url:
+    description: ServiceNow URL (e.g., https://my-company.service-now.com)
+    required: true
+  snow_user:
+    description: ServiceNow username (Username + password or token are required)
+    required: true
+  snow_password:
+    description: ServiceNow password (Username + password or token are required)
+    required: true
+  snow_client_id:
+    description: "ServiceNow Client ID for oAuth Token auth (Required: User + pass + client ID + client secret)"
+    required: false
+  snow_client_secret:
+    description: "ServiceNow Client Secret for oAuth Token auth (Required: User + pass + client ID + client secret)"
+    required: false
+  debug:
+    description: Enable debug output
+    required: false
+    default: "false"
+  snow_timeout:
+    description: "Timeout for ServiceNow API call (default: 60)"
+    required: false
+    default: "60"
+  change_ticket_number:
+    description: ServiceNow change ticket number
+    required: false
+outputs:
+  change_detail:
+    description: The full JSON response from the ServiceNow API
+    value: ${{ steps.create_change.outputs.change_detail }}
+
+runs:
+  using: composite
+  steps:
+    - name: Get ServiceNow Change Ticket Detail
+      id: get_change_detail
+      run: |
+        response=$(${{ github.aciton_path }}/get_change_detail.sh \
+        -c "${{ inputs.change_number }}" \
+        -u "${{ inputs.snow_user }}" \
+        -p "${{ inputs.snow_password }}" \
+        -o "${{ inputs.snow_timeout }}" \
+        -C "${{ inputs.snow_client_id }}" \
+        -S "${{ inputs.snow_client_secret }}" \
+        -D "${{ inputs.debug }}")
+
+        if [ "${{ inputs.debug }}" = "true" ]; then
+          echo "Change Ticket Detail: $response"
+        fi
+
+        echo "change_detail=$response" >> $GITHUB_OUTPUT
+      shell: bash
