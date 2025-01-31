@@ -41,6 +41,7 @@ runs:
       run: |
         response=$(${{ github.action_path }}/assets/get_snow_change.sh \
         -c "${{ inputs.change_number }}" \
+        -l "${{ inputs.snow_url }}" \
         -u "${{ inputs.snow_user }}" \
         -p "${{ inputs.snow_password }}" \
         -o "${{ inputs.snow_timeout }}" \
