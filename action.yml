@@ -32,20 +32,42 @@ outputs:
   change_detail:
     description: The full JSON response from the ServiceNow API
     value: ${{ steps.get_change_detail.outputs.change_detail }}
+  change_sys_id:
+    description: The sys_id of the change ticket
+    value: ${{ steps.get_change_detail.outputs.change_sys_id }}
+  change_type:
+    description: The type of the change ticket
+    value: ${{ steps.get_change_detail.outputs.change_type }}
+  change_requested_by:
+    description: The user who requested the change ticket
+    value: ${{ steps.get_change_detail.outputs.change_requested_by }}
+  change_cab_reviewed:
+    description: The CAB review status of the change ticket
+    value: ${{ steps.get_change_detail.outputs.change_cab_reviewed }}
+  change_state:
+    description: The state of the change ticket
+    value: ${{ steps.get_change_detail.outputs.change_state }}
+  change_state_code:
+    description: The state code of the change ticket
+    value: ${{ steps.get_change_detail.outputs.change_state_code }}
+  change_start_date:
+    description: The start date of the change ticket
+    value: ${{ steps.get_change_detail.outputs.change_start_date }}
+  change_end_date:
+    description: The end date of the change ticket
+    value: ${{ steps.get_change_detail.outputs.change_end_date }}
+  change_cmdb_ci:
+    description: The CMDB CI of the change ticket
+    value: ${{ steps.get_change_detail.outputs.change_cmdb_ci }}
+  change_cmdb_ci_sys_id:
+    description: The CMDB CI sys_id of the change ticket
+    value: ${{ steps.get_change_detail.outputs.change_cmdb_ci_sys_id }}
 
 runs:
   using: composite
   steps:
     - name: Get ServiceNow Change Ticket Detail
       id: get_change_detail
-      # configure additional outputs:
-      # type: .type.value
-      # requested_by: .requested_by.display_value
-      # u_cab_reviewed: .u_cab_reviewed.display_value
-      # state: .state.display_value
-      # state_code: .state.value
-      # start_date: .start_date.value (.value = UTC IE: 2025-01-29 21:45:58)
-      # end_date: .end_date.value (.value = UTC IE: 2025-01-29 21:45:58)
       run: |
         response=$(${{ github.action_path }}/assets/get_snow_change.sh \
         -c "${{ inputs.change_ticket_number }}" \
@@ -60,12 +82,11 @@ runs:
         status=$?
 
         if [ "${{ inputs.debug }}" = "true" ]; then
-          echo "Change Ticket Detail: $response"
+          echo -e "Change Ticket Detail:\n$response"
         fi
 
-        echo "change_detail=$response" >> $GITHUB_OUTPUT
-
-        if [ $status -eq 1 ]; then
+        if [[ $status -eq 0 ]]; then
+          chg_sys_id=$(echo $response | jq -r '.sys_id.value')
           chg_type=$(echo $response | jq -r '.type.value')
           chg_requested_by=$(echo $response | jq -r '.requested_by.display_value')
           chg_cab_reviewed=$(echo $response | jq -r '.u_cab_reviewed.display_value')
@@ -73,11 +94,23 @@ runs:
           chg_state_code=$(echo $response | jq -r '.state.value')
           chg_start_date=$(echo $response | jq -r '.start_date.value')
           chg_end_date=$(echo $response | jq -r '.end_date.value')
+          cmdb_ci=$(echo $response | jq -r '.cmdb_ci.display_value')
+          cmdb_ci_sys_id=$(echo $response | jq -r '.cmdb_ci.value')
 
+          echo "change_sys_id=$chg_sys_id" >> $GITHUB_OUTPUT
           echo "change_type=$chg_type" >> $GITHUB_OUTPUT
-          echo "requested_by=$chg_requested_by" >> $GITHUB_OUTPUT
-          echo "cab_reviewed=$chg_cab_reviewed" >> $GITHUB_OUTPUT
+          echo "change_requested_by=$chg_requested_by" >> $GITHUB_OUTPUT
+          echo "change_cab_reviewed=$chg_cab_reviewed" >> $GITHUB_OUTPUT
+          echo "change_state=$chg_state" >> $GITHUB_OUTPUT
+          echo "change_state_code=$chg_state_code" >> $GITHUB_OUTPUT
+          echo "change_start_date=$chg_start_date" >> $GITHUB_OUTPUT
+          echo "change_end_date=$chg_end_date" >> $GITHUB_OUTPUT
+          echo "change_cmdb_ci=$cmdb_ci" >> $GITHUB_OUTPUT
+          echo "change_cmdb_ci_sys_id=$cmdb_ci_sys_id" >> $GITHUB_OUTPUT
         fi
+
+        echo "change_detail=$response" >> $GITHUB_OUTPUT
+
       shell: bash
 
 branding:
