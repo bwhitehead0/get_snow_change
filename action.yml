@@ -38,6 +38,14 @@ runs:
   steps:
     - name: Get ServiceNow Change Ticket Detail
       id: get_change_detail
+      # configure additional outputs:
+      # type: .type.value
+      # requested_by: .requested_by.display_value
+      # u_cab_reviewed: .u_cab_reviewed.display_value
+      # state: .state.display_value
+      # state_code: .state.value
+      # start_date: .start_date.value (.value = UTC IE: 2025-01-29 21:45:58)
+      # end_date: .end_date.value (.value = UTC IE: 2025-01-29 21:45:58)
       run: |
         response=$(${{ github.action_path }}/assets/get_snow_change.sh \
         -c "${{ inputs.change_ticket_number }}" \
@@ -49,11 +57,27 @@ runs:
         -S "${{ inputs.snow_client_secret }}" \
         -D "${{ inputs.debug }}")
 
+        status=$?
+
         if [ "${{ inputs.debug }}" = "true" ]; then
           echo "Change Ticket Detail: $response"
         fi
 
         echo "change_detail=$response" >> $GITHUB_OUTPUT
+
+        if [ $status -eq 1 ]; then
+          chg_type=$(echo $response | jq -r '.type.value')
+          chg_requested_by=$(echo $response | jq -r '.requested_by.display_value')
+          chg_cab_reviewed=$(echo $response | jq -r '.u_cab_reviewed.display_value')
+          chg_state=$(echo $response | jq -r '.state.display_value')
+          chg_state_code=$(echo $response | jq -r '.state.value')
+          chg_start_date=$(echo $response | jq -r '.start_date.value')
+          chg_end_date=$(echo $response | jq -r '.end_date.value')
+
+          echo "change_type=$chg_type" >> $GITHUB_OUTPUT
+          echo "requested_by=$chg_requested_by" >> $GITHUB_OUTPUT
+          echo "cab_reviewed=$chg_cab_reviewed" >> $GITHUB_OUTPUT
+        fi
       shell: bash
 
 branding:
