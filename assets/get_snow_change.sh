@@ -8,13 +8,13 @@ DEBUG=false
 # error output function
 err() {
   # date format year-month-day hour:minute:second.millisecond+timezone - requires coreutils date
-    echo "$(date +'%Y-%m-%dT%H:%M:%S.%3N%z') - Error - $1" >&2
+    printf '%s\n' "$(date +'%Y-%m-%dT%H:%M:%S.%3N%z') - Error - $1" >&2
 }
 
 dbg() {
   # date format year-month-day hour:minute:second.millisecond+timezone - requires coreutils date
   if [[ "$DEBUG" == true ]]; then
-    echo "$(date +'%Y-%m-%dT%H:%M:%S.%3N%z') - Debug - $1" >&2
+    printf '%s\n' "$(date +'%Y-%m-%dT%H:%M:%S.%3N%z') - Debug - $1" >&2
   fi
 }
 
@@ -188,8 +188,6 @@ get_chg_detail() {
   dbg "get_chg_detail(): Attempting to get change ticket details for: ${change_ticket}"
   # if token is set use that, otherwise use username and password
   # if both are set, use token
-  # save HTTP response code to variable, API response to file (new_chg_response.json)
-  # TODO: update to use variables for response and body like in token_auth()
   if [[ -n "$BEARER_TOKEN" ]]; then
     dbg "get_chg_detail(): Using token for authentication."
     response=$(curl -k --request GET \
@@ -200,7 +198,8 @@ get_chg_detail() {
       --header "Accept: application/json" \
       --header "Content-Type: application/json" \
       --silent -w "\n%{http_code}")
-      body=$(echo "$response" | sed '$d')
+      # body=$(echo "$response" | sed '$d')
+      body=$(printf '%s\n' "$response" | sed '$d')
       code=$(echo "$response" | tail -n1)
   else
     dbg "get_chg_detail(): Using username and password for authentication."
@@ -212,7 +211,8 @@ get_chg_detail() {
       --header "Accept: application/json" \
       --header "Content-Type: application/json" \
       --silent -w "\n%{http_code}")
-      body=$(echo "$response" | sed '$d')
+      # body=$(echo "$response" | sed '$d')
+      body=$(printf '%s\n' "$response" | sed '$d')
       code=$(echo "$response" | tail -n1)
   fi
 
@@ -221,7 +221,8 @@ get_chg_detail() {
 
   # get JSON response length
   # ! will be 0 if no results are returned from the query (EG: {"result":[]}), or, if there is no value in $body, as in the case of an error
-  response_length=$(echo "$body" | jq -r '.result | length')
+  # response_length=$(echo "$body" | jq -r '.result | length')
+  response_length=$(printf '%s\n' "$body" | jq -r '.result | length')
   dbg "get_chg_detail(): JSON response length: $response_length"
 
   # check if response is 2xx and response length is greater than 0
@@ -234,10 +235,11 @@ get_chg_detail() {
     # should be able to address the change number with .result[].number (though this also returns 'null' for other index values in .result[] array), or specifically .result[0].number
     # check if response is expected JSON
     # if so, return .result[0] which contains the ticket details
-    if echo "$body" | jq 'has("result")' > /dev/null 2>&1; then
+    # if echo "$body" | jq 'has("result")' > /dev/null 2>&1; then
+    if printf '%s\n' "$body" | jq 'has("result")' > /dev/null 2>&1; then
       dbg "get_chg_detail(): JSON is expected response body."
       dbg "get_chg_detail(): Change ticket raw response: $body"
-      echo "$body" | jq '.result[0]' -c
+      printf '%s\n' "$body" | jq '.result[0]' -c
     fi
 
   elif [[ "$code" =~ ^2 && $response_length -eq 0 ]]; then
@@ -263,7 +265,6 @@ main() {
   local sn_url=""
   local username=""
   local password=""
-  # local token="" # need to remove in next update, replaced by BEARER_TOKEN for clarity
   local timeout="60" # default timeout value
   local oauth_endpoint="oauth_token.do"
   local client_id=""
@@ -342,7 +343,6 @@ main() {
   sn_url=$(echo "$sn_url" | sed 's/\/$//')
 
   # test if url is valid and reachable
-  # do we need to add normalization here? ie, ensure https:// or http:// is present?
   if ! curl -Lk -s -w "%{http_code}" "$sn_url" -o /dev/null | grep "200" > /dev/null; then
     err "main(): Invalid or unreachable URL: $sn_url"
     exit 1
@@ -361,7 +361,7 @@ main() {
   # get change ticket details
   change_ticket_detail=$(get_chg_detail -u "${username}" -p "${password}" -l "${sn_url}" -c "${change_ticket}" -o "${timeout}" -t "${BEARER_TOKEN}")
 
-  echo "$change_ticket_detail"
+  printf '%s\n' "$change_ticket_detail"
 }
 
 main "$@"
