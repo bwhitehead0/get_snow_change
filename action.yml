@@ -109,7 +109,7 @@ runs:
           echo "change_cmdb_ci_sys_id=$cmdb_ci_sys_id" >> $GITHUB_OUTPUT
         fi
 
-        echo "change_detail=$response" >> $GITHUB_OUTPUT
+        printf '%s\n' "change_detail=$response" >> $GITHUB_OUTPUT
 
       shell: bash
 
