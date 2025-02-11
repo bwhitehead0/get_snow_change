@@ -7,15 +7,14 @@ DEBUG=false
 
 # error output function
 err() {
-  # ? bug-1: do err() and dbg() need to use printf '%s\n' "$1" instead of echo?
   # date format year-month-day hour:minute:second.millisecond+timezone - requires coreutils date
-    echo "$(date +'%Y-%m-%dT%H:%M:%S.%3N%z') - Error - $1" >&2
+    printf '%s\n' "$(date +'%Y-%m-%dT%H:%M:%S.%3N%z') - Error - $1" >&2
 }
 
 dbg() {
   # date format year-month-day hour:minute:second.millisecond+timezone - requires coreutils date
   if [[ "$DEBUG" == true ]]; then
-    echo "$(date +'%Y-%m-%dT%H:%M:%S.%3N%z') - Debug - $1" >&2
+    printf '%s\n' "$(date +'%Y-%m-%dT%H:%M:%S.%3N%z') - Debug - $1" >&2
   fi
 }
 
@@ -240,7 +239,6 @@ get_chg_detail() {
     if printf '%s\n' "$body" | jq 'has("result")' > /dev/null 2>&1; then
       dbg "get_chg_detail(): JSON is expected response body."
       dbg "get_chg_detail(): Change ticket raw response: $body"
-      # echo "$body" | jq '.result[0]' -c
       printf '%s\n' "$body" | jq '.result[0]' -c
     fi
 
@@ -363,7 +361,6 @@ main() {
   # get change ticket details
   change_ticket_detail=$(get_chg_detail -u "${username}" -p "${password}" -l "${sn_url}" -c "${change_ticket}" -o "${timeout}" -t "${BEARER_TOKEN}")
 
-  # echo "$change_ticket_detail"
   printf '%s\n' "$change_ticket_detail"
 }
 
