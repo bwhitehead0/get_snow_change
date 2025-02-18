@@ -86,7 +86,10 @@ runs:
           printf '%s' "Change Ticket Detail: $response"
         fi
 
-        if [[ $status -eq 0 ]]; then
+        if [[ $status -eq "0" ]]; then
+          if [ "${{ inputs.debug }}" = "true" ]; then
+            echo "setting variables for output"
+          fi
           chg_sys_id=$(printf '%s' "$response" | jq -r '.sys_id.value')
           chg_type=$(printf '%s' "$response" | jq -r '.type.value')
           chg_requested_by=$(printf '%s' "$response" | jq -r '.requested_by.display_value')
