@@ -127,7 +127,7 @@ runs:
           fi
         fi
 
-        printf '%s' "change_detail=$response" >> $GITHUB_OUTPUT
+        echo -E "change_detail=${response}" >> $GITHUB_OUTPUT
 
       shell: bash
 
