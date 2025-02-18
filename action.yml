@@ -82,34 +82,34 @@ runs:
         status=$?
 
         if [ "${{ inputs.debug }}" = "true" ]; then
-          echo -e "Change Ticket Detail:\n$response"
+          printf '%s' "Change Ticket Detail:\n$response"
         fi
 
         if [[ $status -eq 0 ]]; then
-          chg_sys_id=$(echo $response | jq -r '.sys_id.value')
-          chg_type=$(echo $response | jq -r '.type.value')
-          chg_requested_by=$(echo $response | jq -r '.requested_by.display_value')
-          chg_cab_reviewed=$(echo $response | jq -r '.u_cab_reviewed.display_value')
-          chg_state=$(echo $response | jq -r '.state.display_value')
-          chg_state_code=$(echo $response | jq -r '.state.value')
-          chg_start_date=$(echo $response | jq -r '.start_date.value')
-          chg_end_date=$(echo $response | jq -r '.end_date.value')
-          cmdb_ci=$(echo $response | jq -r '.cmdb_ci.display_value')
-          cmdb_ci_sys_id=$(echo $response | jq -r '.cmdb_ci.value')
+          chg_sys_id=$(printf '%s' $response | jq -r '.sys_id.value')
+          chg_type=$(printf '%s' $response | jq -r '.type.value')
+          chg_requested_by=$(printf '%s' $response | jq -r '.requested_by.display_value')
+          chg_cab_reviewed=$(printf '%s' $response | jq -r '.u_cab_reviewed.display_value')
+          chg_state=$(printf '%s' $response | jq -r '.state.display_value')
+          chg_state_code=$(printf '%s' $response | jq -r '.state.value')
+          chg_start_date=$(printf '%s' $response | jq -r '.start_date.value')
+          chg_end_date=$(printf '%s' $response | jq -r '.end_date.value')
+          cmdb_ci=$(printf '%s' $response | jq -r '.cmdb_ci.display_value')
+          cmdb_ci_sys_id=$(printf '%s' $response | jq -r '.cmdb_ci.value')
 
-          echo "change_sys_id=$chg_sys_id" >> $GITHUB_OUTPUT
-          echo "change_type=$chg_type" >> $GITHUB_OUTPUT
-          echo "change_requested_by=$chg_requested_by" >> $GITHUB_OUTPUT
-          echo "change_cab_reviewed=$chg_cab_reviewed" >> $GITHUB_OUTPUT
-          echo "change_state=$chg_state" >> $GITHUB_OUTPUT
-          echo "change_state_code=$chg_state_code" >> $GITHUB_OUTPUT
-          echo "change_start_date=$chg_start_date" >> $GITHUB_OUTPUT
-          echo "change_end_date=$chg_end_date" >> $GITHUB_OUTPUT
-          echo "change_cmdb_ci=$cmdb_ci" >> $GITHUB_OUTPUT
-          echo "change_cmdb_ci_sys_id=$cmdb_ci_sys_id" >> $GITHUB_OUTPUT
+          printf '%s' "change_sys_id=$chg_sys_id" >> $GITHUB_OUTPUT
+          printf '%s' "change_type=$chg_type" >> $GITHUB_OUTPUT
+          printf '%s' "change_requested_by=$chg_requested_by" >> $GITHUB_OUTPUT
+          printf '%s' "change_cab_reviewed=$chg_cab_reviewed" >> $GITHUB_OUTPUT
+          printf '%s' "change_state=$chg_state" >> $GITHUB_OUTPUT
+          printf '%s' "change_state_code=$chg_state_code" >> $GITHUB_OUTPUT
+          printf '%s' "change_start_date=$chg_start_date" >> $GITHUB_OUTPUT
+          printf '%s' "change_end_date=$chg_end_date" >> $GITHUB_OUTPUT
+          printf '%s' "change_cmdb_ci=$cmdb_ci" >> $GITHUB_OUTPUT
+          printf '%s' "change_cmdb_ci_sys_id=$cmdb_ci_sys_id" >> $GITHUB_OUTPUT
         fi
 
-        printf '%s\n' "change_detail=$response" >> $GITHUB_OUTPUT
+        printf '%s' "change_detail=$response" >> $GITHUB_OUTPUT
 
       shell: bash
 
