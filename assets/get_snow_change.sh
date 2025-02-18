@@ -8,13 +8,13 @@ DEBUG=false
 # error output function
 err() {
   # date format year-month-day hour:minute:second.millisecond+timezone - requires coreutils date
-    printf '%s\n' "$(date +'%Y-%m-%dT%H:%M:%S.%3N%z') - Error - $1" >&2
+    printf '%s' "$(date +'%Y-%m-%dT%H:%M:%S.%3N%z') - Error - $1" >&2
 }
 
 dbg() {
   # date format year-month-day hour:minute:second.millisecond+timezone - requires coreutils date
   if [[ "$DEBUG" == true ]]; then
-    printf '%s\n' "$(date +'%Y-%m-%dT%H:%M:%S.%3N%z') - Debug - $1" >&2
+    printf '%s' "$(date +'%Y-%m-%dT%H:%M:%S.%3N%z') - Debug - $1" >&2
   fi
 }
 
@@ -84,6 +84,7 @@ token_auth() {
   # get bearer token
   # save HTTP response code to variable 'code', API response to variable 'body'
   # https://superuser.com/a/1321274
+  # ! might need to change this to use printf '%s' instead of echo to avoid issues with escape characters
   dbg "token_auth(): Attempting to authenticate with OAuth."
   response=$(curl -s -k --location -w "\n%{http_code}" -X POST -d "grant_type=$grant_type" -d "username=$username" -d "password=$password" -d "client_id=$client_id" -d "client_secret=$client_secret" "$oauth_URL")
   body=$(echo "$response" | sed '$d')
@@ -199,7 +200,7 @@ get_chg_detail() {
       --header "Content-Type: application/json" \
       --silent -w "\n%{http_code}")
       # body=$(echo "$response" | sed '$d')
-      body=$(printf '%s\n' "$response" | sed '$d')
+      body=$(printf '%s' "$response" | sed '$d')
       code=$(echo "$response" | tail -n1)
   else
     dbg "get_chg_detail(): Using username and password for authentication."
@@ -212,7 +213,7 @@ get_chg_detail() {
       --header "Content-Type: application/json" \
       --silent -w "\n%{http_code}")
       # body=$(echo "$response" | sed '$d')
-      body=$(printf '%s\n' "$response" | sed '$d')
+      body=$(printf '%s' "$response" | sed '$d')
       code=$(echo "$response" | tail -n1)
   fi
 
@@ -222,7 +223,7 @@ get_chg_detail() {
   # get JSON response length
   # ! will be 0 if no results are returned from the query (EG: {"result":[]}), or, if there is no value in $body, as in the case of an error
   # response_length=$(echo "$body" | jq -r '.result | length')
-  response_length=$(printf '%s\n' "$body" | jq -r '.result | length')
+  response_length=$(printf '%s' "$body" | jq -r '.result | length')
   dbg "get_chg_detail(): JSON response length: $response_length"
 
   # check if response is 2xx and response length is greater than 0
@@ -236,10 +237,10 @@ get_chg_detail() {
     # check if response is expected JSON
     # if so, return .result[0] which contains the ticket details
     # if echo "$body" | jq 'has("result")' > /dev/null 2>&1; then
-    if printf '%s\n' "$body" | jq 'has("result")' > /dev/null 2>&1; then
+    if printf '%s' "$body" | jq 'has("result")' > /dev/null 2>&1; then
       dbg "get_chg_detail(): JSON is expected response body."
       dbg "get_chg_detail(): Change ticket raw response: $body"
-      printf '%s\n' "$body" | jq '.result[0]' -c
+      printf '%s' "$body" | jq '.result[0]' -c
     fi
 
   elif [[ "$code" =~ ^2 && $response_length -eq 0 ]]; then
@@ -361,7 +362,7 @@ main() {
   # get change ticket details
   change_ticket_detail=$(get_chg_detail -u "${username}" -p "${password}" -l "${sn_url}" -c "${change_ticket}" -o "${timeout}" -t "${BEARER_TOKEN}")
 
-  printf '%s\n' "$change_ticket_detail"
+  printf '%s' "$change_ticket_detail"
 }
 
 main "$@"

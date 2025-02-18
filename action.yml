@@ -82,20 +82,20 @@ runs:
         status=$?
 
         if [ "${{ inputs.debug }}" = "true" ]; then
-          echo -e "Change Ticket Detail:\n$response"
+          printf '%s' "Change Ticket Detail: $response"
         fi
 
-        if [[ $status -eq 0 ]]; then
-          chg_sys_id=$(echo $response | jq -r '.sys_id.value')
-          chg_type=$(echo $response | jq -r '.type.value')
-          chg_requested_by=$(echo $response | jq -r '.requested_by.display_value')
-          chg_cab_reviewed=$(echo $response | jq -r '.u_cab_reviewed.display_value')
-          chg_state=$(echo $response | jq -r '.state.display_value')
-          chg_state_code=$(echo $response | jq -r '.state.value')
-          chg_start_date=$(echo $response | jq -r '.start_date.value')
-          chg_end_date=$(echo $response | jq -r '.end_date.value')
-          cmdb_ci=$(echo $response | jq -r '.cmdb_ci.display_value')
-          cmdb_ci_sys_id=$(echo $response | jq -r '.cmdb_ci.value')
+        if [[ $status -eq "0" ]]; then
+          chg_sys_id=$(printf '%s' "$response" | jq -r '.sys_id.value')
+          chg_type=$(printf '%s' "$response" | jq -r '.type.value')
+          chg_requested_by=$(printf '%s' "$response" | jq -r '.requested_by.display_value')
+          chg_cab_reviewed=$(printf '%s' "$response" | jq -r '.u_cab_reviewed.display_value')
+          chg_state=$(printf '%s' "$response" | jq -r '.state.display_value')
+          chg_state_code=$(printf '%s' "$response" | jq -r '.state.value')
+          chg_start_date=$(printf '%s' "$response" | jq -r '.start_date.value')
+          chg_end_date=$(printf '%s' "$response" | jq -r '.end_date.value')
+          cmdb_ci=$(printf '%s' "$response" | jq -r '.cmdb_ci.display_value')
+          cmdb_ci_sys_id=$(printf '%s' "$response" | jq -r '.cmdb_ci.value')
 
           echo "change_sys_id=$chg_sys_id" >> $GITHUB_OUTPUT
           echo "change_type=$chg_type" >> $GITHUB_OUTPUT
@@ -109,7 +109,7 @@ runs:
           echo "change_cmdb_ci_sys_id=$cmdb_ci_sys_id" >> $GITHUB_OUTPUT
         fi
 
-        printf '%s\n' "change_detail=$response" >> $GITHUB_OUTPUT
+        echo -E change_detail="${response}" >> $GITHUB_OUTPUT
 
       shell: bash
 
