@@ -82,6 +82,7 @@ runs:
         status=$?
 
         if [ "${{ inputs.debug }}" = "true" ]; then
+          echo "status: $status"
           printf '%s' "Change Ticket Detail:\n$response"
         fi
 
