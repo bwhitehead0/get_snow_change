@@ -45,7 +45,7 @@ jobs:
             echo "CHG end date: ${{ steps.change_detail.outputs.change_end_date }}"
             echo "CHG cmdb_ci: ${{ steps.change_detail.outputs.change_cmdb_ci }}"
             echo "CHG cmdb_ci sys_id: ${{ steps.change_detail.outputs.change_cmdb_ci_sys_id }}"
-            echo "CHG Detail: ${{ steps.change_detail.outputs.change_detail }}"
+            printf '%s' 'CHG Detail: ${{ steps.change_detail.outputs.change_detail }}'
             
 ```
 
