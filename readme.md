@@ -49,6 +49,8 @@ jobs:
             
 ```
 
+> **⚠️ Note:** When using the full output from `get_snow_change` by addressing `change_detail` in a `run` block, you will need to use single quotes around the GitHub Actions variable, otherwise the double quotes in the JSON data will terminate the string early and break the operation.
+
 ### Inputs
 
 * `snow_url`: ServiceNow URL (e.g., https://my-company.service-now.com). **Required**.
